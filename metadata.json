@@ -1,0 +1,7 @@
+{
+  "name": "Remix: Sentinel: San Pedro Disaster Response",
+  "description": "A comprehensive disaster management platform for San Pedro, Laguna, featuring real-time population profiling, smart inventory tracking, and geo-risk mapping.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

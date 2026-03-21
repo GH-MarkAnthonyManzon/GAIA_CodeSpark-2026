@@ -1,0 +1,112 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: residents
+// Fields:
+//   - name: string (required)
+//   - status: string (required, enum: SAFE, MISSING, IN_EVACUATION, NEEDS_RESCUE)
+//   - vulnerability: string (enum: NONE, SENIOR, PWD, CHILD)
+//   - barangay: string (required)
+//   - location: map { lat: number, lng: number }
+//   - aidReceived: boolean
+//   - updatedAt: timestamp
+//
+// Collection: inventory
+// Fields:
+//   - name: string (required)
+//   - quantity: number (required)
+//   - location: string (required)
+//   - updatedAt: timestamp
+//
+// Collection: tasks
+// Fields:
+//   - title: string (required)
+//   - description: string
+//   - status: string (required, enum: OPEN, FILLED, COMPLETED)
+//   - volunteerName: string
+//   - createdAt: timestamp
+//
+// Collection: sos_alerts
+// Fields:
+//   - userId: string (required)
+//   - userName: string
+//   - location: map { lat: number, lng: number } (required)
+//   - timestamp: timestamp
+//   - status: string (required, enum: ACTIVE, RESOLVED)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             (request.auth.token.email == "altaccmz.ph@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidResident(data) {
+      return data.name is string && data.name.size() > 0 &&
+             data.status in ["SAFE", "MISSING", "IN_EVACUATION", "NEEDS_RESCUE"] &&
+             data.barangay is string && data.barangay.size() > 0;
+    }
+
+    function isValidInventory(data) {
+      return data.name is string && data.name.size() > 0 &&
+             data.quantity is number && data.quantity >= 0 &&
+             data.location is string;
+    }
+
+    function isValidTask(data) {
+      return data.title is string && data.title.size() > 0 &&
+             data.status in ["OPEN", "FILLED", "COMPLETED"];
+    }
+
+    function isValidSOS(data) {
+      return data.userId is string &&
+             data.location is map &&
+             data.location.lat is number &&
+             data.location.lng is number &&
+             data.status in ["ACTIVE", "RESOLVED"];
+    }
+
+    // Rules
+    match /residents/{residentId} {
+      allow read: if isAdmin(); // Only admins can see individual residents
+      allow create, update: if isAuthenticated() && isValidResident(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /inventory/{itemId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidTask(request.resource.data);
+      allow update: if isAuthenticated() && isValidTask(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /sos_alerts/{alertId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated() && isValidSOS(request.resource.data) && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

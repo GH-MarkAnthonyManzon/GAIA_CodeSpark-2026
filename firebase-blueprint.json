@@ -1,0 +1,69 @@
+{
+  "entities": {
+    "Resident": {
+      "title": "Resident",
+      "description": "A resident of San Pedro with status and vulnerability tracking.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the resident" },
+        "status": { "type": "string", "enum": ["SAFE", "MISSING", "IN_EVACUATION", "NEEDS_RESCUE"], "description": "Current safety status" },
+        "vulnerability": { "type": "string", "enum": ["NONE", "SENIOR", "PWD", "CHILD"], "description": "Vulnerability category" },
+        "barangay": { "type": "string", "description": "Barangay of residence" },
+        "location": { "type": "object", "properties": { "lat": { "type": "number" }, "lng": { "type": "number" } } },
+        "aidReceived": { "type": "boolean", "description": "Whether the resident has received aid" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "status", "barangay"]
+    },
+    "InventoryItem": {
+      "title": "Inventory Item",
+      "description": "Relief goods in stock.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "quantity": { "type": "number" },
+        "location": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "quantity", "location"]
+    },
+    "VolunteerTask": {
+      "title": "Volunteer Task",
+      "description": "Tasks for volunteers to sign up for.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["OPEN", "FILLED", "COMPLETED"] },
+        "volunteerName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "status"]
+    },
+    "SOSAlert": {
+      "title": "SOS Alert",
+      "description": "An emergency alert containing user location.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["ACTIVE", "RESOLVED"] }
+      },
+      "required": ["userId", "location", "status"]
+    }
+  },
+  "firestore": {
+    "residents": { "schema": "Resident", "description": "Collection of residents" },
+    "inventory": { "schema": "InventoryItem", "description": "Collection of relief goods" },
+    "tasks": { "schema": "VolunteerTask", "description": "Collection of volunteer tasks" },
+    "sos_alerts": { "schema": "SOSAlert", "description": "Collection of emergency SOS alerts" }
+  }
+}
