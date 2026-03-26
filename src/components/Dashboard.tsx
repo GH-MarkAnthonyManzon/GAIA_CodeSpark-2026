@@ -181,29 +181,6 @@ export default function Dashboard({ onNavigate, isAdmin = false }: DashboardProp
         )}
       </AnimatePresence>
 
-      {/* Active Alerts Feed */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xs font-black uppercase tracking-widest text-primary-green">Active Alerts</h2>
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-soft-gray bg-soft-gray/10 px-2 py-1 rounded-full">3 TOTAL</span>
-          </div>
-        </div>
-        
-        <div className="space-y-3">
-              <div className="bg-white border border-alert-red/10 p-4 rounded-2xl flex gap-4 relative overflow-hidden sampaguita-shadow">
-                <div className="absolute left-0 top-0 w-1.5 h-full bg-alert-red" />
-                <div className="w-10 h-10 bg-alert-red/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <AlertTriangle className="w-5 h-5 text-alert-red" />
-                </div>
-                <div>
-                  <h4 className="text-alert-red font-black text-sm uppercase tracking-wide">FLOOD WARNING</h4>
-                  <p className="text-charcoal text-xs font-medium mt-1 leading-relaxed tracking-wide">Evacuate low-lying areas. Laguna Lake overflow affecting Brgy. Cuyab.</p>
-                  <p className="text-soft-gray text-[10px] font-bold mt-2 tracking-widest">10 MINS AGO • EMERGENCY</p>
-                </div>
-              </div>
-        </div>
-      </section>
 
       <div className="grid grid-cols-2 gap-4">
         <StatCard label="LGU Ayuda" value={stats.lguAyuda} icon={Package} colorClass="text-primary-green" />
